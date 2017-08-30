@@ -23,6 +23,8 @@ A few notes on the arguments:
   - valid values are uafgina for the receiving station at UAF, gilmore for the various receiving stations at gilmore, and barrow for the barrow antenna.
 * Processing level (-p) 
   - most users are interested in level1 data (level1) or geotiff data (geotiff_l2), contact us at support@gina.alaska.edu if another datasets in needed, and we can offer advice.
+* namespace (-n)
+  - this option places each "pass" in it's own directory - this is useful if a pass is taken at two sites, and the different sites will end up in seperate directories.  Without this option the files are all placed inside the path specified in the "-o" option. 
 
 
 ## Examples
