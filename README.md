@@ -1,6 +1,6 @@
 # GINA NRT Tools
 
-This git repo contains tools for obtaining data from [GINA](http://gina.alaska.edu)'s Near Real Time (NRT) satellite processing system from the GINA Direct Broadcast receiption station and the [NOAA NESDIS Fairbanks CDA](http://www.gina.alaska.edu/partners/fairbanks-command-data-acquisition-station) receiving station.
+This git repo contains tools for obtaining data from [GINA](http://gina.alaska.edu)'s Near Real Time (NRT) satellite processing system from the GINA Direct Broadcast receiption station and the [NOAA NESDIS Fairbanks CDA](http://www.gina.alaska.edu/partners/fairbanks-command-data-acquisition-station) suite of receiving stations.
 
 ## Fetching NRT data
 
