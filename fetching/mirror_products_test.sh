@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NRT_SITE="http://nrt-status.gina.alaska.edu/products.txt?"
+NRT_SITE="http://nrt-test.gina.alaska.edu/products.txt?"
 QUERY=""
 
 usage() {
@@ -81,6 +81,7 @@ TMPFILE="/tmp/nrt-mirror-$(date +%Y%m%d%H%M%S)"
 
 #Get the products list
 curl -s "${NRT_SITE}start_date=${START_DATE}&end_date=${END_DATE}&${QUERY}" -o $TMPFILE
+sed -i 's|dds.gina.alaska.edu/nrt|nrt-dds-test.gina.alaska.edu/|g' $TMPFILE
 
 for file in $(cat $TMPFILE); do
   filename=$(basename $file)
