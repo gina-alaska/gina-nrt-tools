@@ -1,0 +1,54 @@
+
+usage: getGINAsat.py [-h] [-s SATELLITE]
+                     [-l {awips,mirs_awips,scmi,sst_awips}] [-t] [-c]
+                     [-bm BACKMINS] [-v]
+                     {viirs,modis,metop,avhrr,atms}
+                     [{viirs,modis,metop,avhrr,atms} ...]
+
+### One or more sensor types are required "positional" arguments that are not 
+preceeded by an option indicator. Below are the only valid sensor choices:
+   viirs
+   modis
+   avhrr
+   atms
+
+### Below are optional arguments are preceeded by option indicators (either one dash
+and a letter, or two dashes and a keyword). Optional arguments are not required unless a 
+specific constraint is needed. An option that is not specified indicates any or all 
+items in that category.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s SATELLITE, --satellite SATELLITE
+                        satellites include {snpp, noaa20, noaa19, noaa18, noaa15, aqua, terra}
+  -l {awips,mirs_awips,scmi,sst_awips}, --level {awips,mirs_awips,scmi,sst_awips}
+                        format type
+  -t, --test            use test NRT data stream
+  -c, --qc              turn on image qc filter requiring at least a minimum number of valid pixels 
+                        and a minimum range of values. 
+  -bm BACKMINS, --backmins BACKMINS
+                        num mins back to request products
+  -v, --verbose         verbose flag
+
+##############################################
+getLatestSat_GINA.sh   - a wrapper script for running getGINAsat.py from cron that checks for 
+                         multiple instances that might still be running and appends output to an 
+                         AWIPS log file.  Arguments are passed through to the python script, so 
+			 all arguments listed above apply.
+##############################################
+
+Examples:
+
+getGINAsat.py --level awips viirs modis avhrr
+       - retrieves any awips formatted viirs, modis, or avhrr data from any platform data within 
+	 the default search time of the last 60 mins.
+getGINAsat.py --satellite noaa20 --test -bm 85 viirs
+       - retrieves any awips formatted viirs data from noaa20 within the specified search time
+         of the last 85 mins. 
+getGINAsat.py --level mirs_awips --test -bm 75 atms avhrr
+       - retrieves any mirs products in awips format from atms or avhrr(AMSU-A/MHS)  within the 
+	 specified search time of the last 75 mins. 
+getGINAsat.py --level scmi --test -bm 90 viirs modis
+       - retrieves any SCMI tile formatted viirs or modis from any platform data within 
+	 the specified search time of the last 90 mins.
+
