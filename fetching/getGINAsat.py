@@ -5,7 +5,7 @@ import urllib
 import datetime
 import os, sys
 import gzip
-from shutil import copy, move
+from shutil import copy, move, copyfileobj
 import argparse
 from time import strftime
 from HTMLParser import HTMLParser
@@ -14,6 +14,8 @@ from pytz import timezone
 import numpy
 import Scientific.IO.NetCDF
 from Scientific.IO import NetCDF
+from nucaps4awips import fix_nucaps_file
+from ncImageQC import qc_image_file
 
 ##############################################################
 class MyHTMLParser(HTMLParser):
@@ -60,7 +62,7 @@ def _process_command_line():
         '-s', '--satellite', action='store', default='all', help='satellite')
     parser.add_argument(
         '-l', '--level', action='store', default='awips', choices=['awips',
-        'mirs_awips','scmi','sst_awips'], help='format type')
+        'mirs_awips','scmi','sst_awips','nucaps_level2'], help='format type')
     parser.add_argument(
         '-t', '--test', action='store_true', help='use test NRT data stream')
     parser.add_argument(
@@ -74,39 +76,6 @@ def _process_command_line():
 
     args = parser.parse_args()
     return args
-
-######################################################
-
-def ncImageQC(filepath, minpixcnt, minpixrng):
-
-   if not os.path.exists(filepath):
-      print "File not found: ",filepath
-   try:
-      cdf_fh = NetCDF.NetCDFFile(filepath, "r")
-   except IOError:
-       print 'Error opening {}'.format(args.filepath)
-       return 0
-   except OSError:
-       print 'Error accessing {}'.format(args.filepath)
-       return 0
-
-   varid = cdf_fh.variables['image']
-   pixdata = varid.getValue()
-   cdf_fh.close()
-   #
-   pixcnt = numpy.sum(pixdata != 0)
-   #
-   if pixcnt < minpixcnt:
-      return 0
-   #
-   pixmax = numpy.max(pixdata)
-   pixmin = numpy.min(pixdata[numpy.nonzero(pixdata)])
-   pixrng = int(pixmax) - int(pixmin)
-
-   if pixrng < minpixrng:
-      return 0
-
-   return 1
 
 ######################################################
 
@@ -193,6 +162,8 @@ def main():
             # use base name to create a new name with "Alaska" prefix and ".nc" extension
             if level == 'scmi':
                newfilename="AKPOLAR_{}.nc".format(basenm)
+            elif level == 'nucaps_level2':
+               newfilename=basenm
             else:
                newfilename="Alaska_{}.nc".format(basenm)
 
@@ -224,7 +195,7 @@ def main():
             ###############################################
             # last step is to do QC checks on the data
             if args.qcfilter:
-               if ncImageQC(filename, minPixelCount, minPixelRange):
+               if qc_image_file(filename, minPixelCount, minPixelRange):
                   print "Moving {} to {}".format(filename, ingestDir)
                   move(filename,ingestDir)
                   ingcount += 1
@@ -233,6 +204,24 @@ def main():
                   os.remove(filename)
             ###############################################
             else:
+               # Check whether this is nucaps sounding which needs
+               # file modification for AWIPS
+               if level == 'nucaps_level2':
+                   print "NUCAPS: {}".format(filename)
+                   if "NUCAPS-EDR" in filename:
+                      origFilename = filename
+                      print "fix nucaps file"
+                      filename = fix_nucaps_file(origFilename)
+                      print "new filename = {}".format(filename)
+                      if os.path.exists(filename):
+                         # a new converted file has been made so remove the original file
+                         print "Removing: {}".format(origFilename)
+                         #move(origFilename,"/home/awips/testscripts/testdata")
+                         os.remove(origFilename)
+                   else:
+                      print "Removing: {}".format(filename)
+                      os.remove(filename)
+                      continue 
                # OK, ready to move the file to the ingest directory
                print "Moving {} to {}".format(filename, ingestDir)
                move(filename,ingestDir)
