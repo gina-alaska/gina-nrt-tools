@@ -2,7 +2,7 @@
 This directory includes sample scripts for fetching data from GINA's NRT system. 
 
 ## mirror_products.sh
-- This script is intended to provide an easy way to retrieve data from GINA's NRT processing system in a scripted manner.  It is intended to be used on a mondern linux box, but should work on most unix based systems.
+- This script is intended to provide an easy way to retrieve data from GINA's NRT processing system in a scripted manner.  It is intended to be used on a modern linux box, but should work on most unix based systems.
 - This script is intended to be run on a directory at a fixed interval - it will pull data matching the arguements (see below),  and skip any data that was previously downloaded. 
 - It can be used as a starting point for a custom script if it does not meet the users needs. 
 - It has these options (from ./mirror_products.sh -h ):
