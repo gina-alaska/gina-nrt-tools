@@ -77,7 +77,7 @@ case $(uname -s) in
   ;;
 esac
 
-TMPFILE="/tmp/nrt-mirror-$(date +%Y%m%d%H%M%S)"
+TMPFILE="/tmp/nrt-mirror-$(whoami)-$(date +%Y%m%d%H%M%S%N)-$RANDOM"
 
 #Get the products list
 curl -s "${NRT_SITE}start_date=${START_DATE}&end_date=${END_DATE}&${QUERY}" -o $TMPFILE
