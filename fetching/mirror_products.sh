@@ -121,7 +121,7 @@ done
                 fi
 
                 if [ ! -e "$OUTPUT_PATH"/done_"$PLEVEL" ]; then
-                        echo "Would touch $OUTPUT_PATH/done_$PLEVEL"
+                        echo "Making done file $OUTPUT_PATH/done_$PLEVEL"
                         touch  "$OUTPUT_PATH/done_$PLEVEL"
                 fi
 
