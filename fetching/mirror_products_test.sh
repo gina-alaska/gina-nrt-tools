@@ -64,8 +64,8 @@ DURATION="${DURATION:-1}"
 
 case $(uname -s) in
   Linux)
-  START_DATE=$(date +"%Y-%m-%d" -d "${DURATION} days ago")
-  END_DATE=$(date +"%Y-%m-%d" -d "tomorrow")
+  START_DATE=$(date -u +"%Y-%m-%d" -d "${DURATION} days ago")
+  END_DATE=$(date -u +"%Y-%m-%d" -d "tomorrow")
   ;;
   Darwin)
   START_DATE=$(date -j -v-${DURATION}d +"%Y-%m-%d")
@@ -81,7 +81,10 @@ TMPFILE="/tmp/nrt-mirror-$(whoami)-$(date +%Y%m%d%H%M%S%N)-$RANDOM"
 
 #Get the products list
 curl -s "${NRT_SITE}start_date=${START_DATE}&end_date=${END_DATE}&${QUERY}" -o $TMPFILE
-sed -i 's|dds.gina.alaska.edu/nrt|nrt-dds-test.gina.alaska.edu/|g' $TMPFILE
+#sed -i 's|dds.gina.alaska.edu/nrt|nrt-dds-test.gina.alaska.edu/|g' $TMPFILE
+sed -i 's|dds.gina.alaska.edu/nrt|nrt-dds-test-0001.x.gina.alaska.edu/|g' $TMPFILE
+
+cat  $TMPFILE
 
 for file in $(cat $TMPFILE); do
   filename=$(basename $file)
