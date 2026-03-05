@@ -92,3 +92,46 @@ test
     └── SVM14_npp_d20170828_t0952108_e0953349_b30234_c20170828100730671028_cspp_dev.h5
 (snip)
 ```
+
+
+## fetch-products.py
+
+- This script provides the same data access as mirror_products.sh with similar parameters.
+
+- Additional options exist for filtering by a wildcard and suffix
+
+- see the dropdown options at http://nrt-status.gina.alaska.edu/products for avialable parameters.
+
+### Usage
+
+```bash
+$ python fetch-products.py  -h
+usage: fetch-products.py [-h] [-s SATELLITE] [-i SENSOR] [-f FACILITY] [-p PROCESSING_LEVEL] [-n]
+                         [-o OUTPUT] [-z] [--start-date START_DATE] [--end-date END_DATE] [-w WILDCARD]
+                         [--suffix SUFFIX] [--overwrite]
+
+Fetch and download files from gina processing stack
+
+options:
+  -h, --help            show this help message and exit
+  -s SATELLITE, --satellite SATELLITE
+                        Fetch data for SATELLITE
+  -i SENSOR, --sensor SENSOR
+                        Fetch data for SENSOR
+  -f FACILITY, --facility FACILITY
+                        Fetch data for FACILITY
+  -p PROCESSING_LEVEL, --processing-level PROCESSING_LEVEL
+                        Fetch data for PROCESSING_LEVEL
+  -n, --namespace       Namespace the data (Place in sub-directories for each pass)
+  -o OUTPUT, --output OUTPUT
+                        Path to write data to (Default: current directory)
+  -z, --done-file       Create done file
+  --start-date START_DATE
+                        Start date for filtering products (YYYY-MM-DD format)
+  --end-date END_DATE   End date for filtering products (YYYY-MM-DD format)
+  -w WILDCARD, --wildcard WILDCARD
+                        Wildcard filter for filenames (only download files containing this string)
+  --suffix SUFFIX       Filter by file suffix (e.g., '.png' or 'small.png')
+  --overwrite           Overwrite existing files (default: skip if file exists)
+```
+
