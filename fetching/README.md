@@ -1,5 +1,11 @@
 # Fetching
 This directory includes sample scripts for fetching data from GINA's NRT system. 
+ - [mirror_products.sh](./mirror_products.sh) provides a template for retrieving data from a unix command line.
+ - [fetch_products.py](./fetch_products.py) provides similar functionality in python, with additional filtering options.
+
+See sections below for further details on these two scripts. These scripts should be considered templates and are not intended to have fully developed error handling.
+
+Dropdown options can be viewed at http://nrt-status.gina.alaska.edu/products to determine available parameters. Parameters may change over time with updates, such as the addition of new satellite retrievals.
 
 ## mirror_products.sh
 - This script is intended to provide an easy way to retrieve data from GINA's NRT processing system in a scripted manner.  It is intended to be used on a modern linux box, but should work on most unix based systems.
@@ -18,13 +24,13 @@ OPTIONS:
 ```
 A few notes on the arguments:
 * Satellite (-s)
-  * valid options are aqua, terra, snpp, noaa19, noaa18, noaa15, metop-b
+  * examples: noaa21, metop-c
 * Sensor (-i) 
-  - valid options are modis,avhrr, viirs, omps, atms, cris
+  - examples: viirs, avhrr
 * Facility( -f ) 
-  - valid values are uafgina for the receiving station at UAF, gilmore for the various receiving stations at gilmore, and barrow for the barrow antenna.
+  - we recommend users __do not__ specify a facility as satellite passes may be recieved at different facilities depending on priorites.
 * Processing level (-p) 
-  - most users are interested in level1 data (level1) or geotiff data (geotiff_l2), contact us at support@gina.alaska.edu if another datasets in needed, and we can offer advice.
+  - most users are interested in level1 data (level1) or geotiff data (geotiff_l2). Contact us at support@gina.alaska.edu if other datasets are needed and we can offer advice.
 * namespace (-n)
   - this option places each "pass" in it's own directory - this is useful if a pass is taken at two sites, and the different sites will end up in seperate directories.  Without this option the files are all placed inside the path specified in the "-o" option. 
 
@@ -36,30 +42,45 @@ A few notes on the arguments:
  ./mirror_products.sh  -p geotiff_l2 -n -o ./test/ 
  tree test
 test
-├── AQUA.20170828.013205.dat.gz
-│   └── a1.20170828.0132_true_color.tif
-├── t1.17240.0112
-│   ├── t1.20170828.0116_2_6_1_1.small.png
-│   ├── t1.20170828.0116_2_6_1_1.tif
-│   ├── t1.20170828.0116_3_6_7.small.png
-│   ├── t1.20170828.0116_3_6_7.tif
-│   ├── t1.20170828.0116_7_2_1_1.small.png
-│   ├── t1.20170828.0116_7_2_1_1.tif
-│   ├── t1.20170828.0116_true_color.small.png
-│   └── t1.20170828.0116_true_color.tif
-├── TERRA.20170828.011054.dat.gz
-│   ├── t1.20170828.0116_2_6_1_1.small.png
-│   ├── t1.20170828.0116_2_6_1_1.tif
-│   ├── t1.20170828.0116_31.small.png
-│   ├── t1.20170828.0116_31.tif
-│   ├── t1.20170828.0116_3_6_7.small.png
-│   ├── t1.20170828.0116_3_6_7.tif
-│   ├── t1.20170828.0116_7_2_1_1.small.png
-│   ├── t1.20170828.0116_7_2_1_1.tif
-│   ├── t1.20170828.0116_true_color.small.png
-│   └── t1.20170828.0116_true_color.tif
-└── TERRA.20170828.042231.dat.gz
-    └── t1.20170828.0422_true_color.tif
+├── JPSS1.20260609.212259
+│   ├── noaa20.20260609.2122_DNB_adaptive.small.png
+│   ├── noaa20.20260609.2122_DNB_adaptive.tif
+│   ├── noaa20.20260609.2122_DNB.small.png
+│   ├── noaa20.20260609.2122_DNB.tif
+│   ├── noaa20.20260609.2122_I03_I02_I01.small.png
+│   ├── noaa20.20260609.2122_I03_I02_I01.tif
+│   ├── noaa20.20260609.2122_i03_m08_i01.small.png
+│   ├── noaa20.20260609.2122_i03_m08_i01.tif
+│   ├── noaa20.20260609.2122_i04_colored.small.png
+│   ├── noaa20.20260609.2122_i04_colored.tif
+│   ├── noaa20.20260609.2122_i04_i02_i01.small.png
+│   ├── noaa20.20260609.2122_i04_i02_i01.tif
+│   ├── noaa20.20260609.2122_i05_colored.small.png
+│   ├── noaa20.20260609.2122_i05_colored.tif
+│   ├── noaa20.20260609.2122_I05.small.png
+│   ├── noaa20.20260609.2122_I05.tif
+│   ├── noaa20.20260609.2122_m12_m11_m10.small.png
+│   ├── noaa20.20260609.2122_m12_m11_m10.tif
+│   ├── noaa20.20260609.2122_micro_physics.small.png
+│   ├── noaa20.20260609.2122_micro_physics.tif
+│   ├── noaa20.20260609.2122_true_color.small.png
+│   └── noaa20.20260609.2122_true_color.tif
+├── NPP.20260609.210420
+│   ├── npp.20260609.2102_i03_m08_i01.small.png
+│   ├── npp.20260609.2102_i03_m08_i01.tif
+│   ├── npp.20260609.2102_i04_colored.small.png
+│   ├── npp.20260609.2102_i04_colored.tif
+│   ├── npp.20260609.2102_i05_colored.small.png
+│   ├── npp.20260609.2102_i05_colored.tif
+│   ├── npp.20260609.2102_micro_physics.small.png
+│   └── npp.20260609.2102_micro_physics.tif
+└── tp2026160214355.METOP-C.dat.gz
+    ├── metop-c.20260609.2145_3a_2_1.small.png
+    ├── metop-c.20260609.2145_3a_2_1.tif
+    ├── metop-c.20260609.2145_4.small.png
+    ├── metop-c.20260609.2145_4.tif
+    ├── metop-c.20260609.2145_5.small.png
+    └── metop-c.20260609.2145_5.tif
 (snip..)
 ```
 * To fetch all the recient L1 VIIRS data from SNPP:
@@ -94,19 +115,17 @@ test
 ```
 
 
-## fetch-products.py
+## fetch_products.py
 
 - This script provides the same data access as mirror_products.sh with similar parameters.
 
 - Additional options exist for filtering by a wildcard and suffix
 
-- see the dropdown options at http://nrt-status.gina.alaska.edu/products for avialable parameters.
-
 ### Usage
 
 ```bash
-$ python fetch-products.py  -h
-usage: fetch-products.py [-h] [-s SATELLITE] [-i SENSOR] [-f FACILITY] [-p PROCESSING_LEVEL] [-n]
+$ python fetch_products.py  -h
+usage: fetch_products.py [-h] [-s SATELLITE] [-i SENSOR] [-f FACILITY] [-p PROCESSING_LEVEL] [-n]
                          [-o OUTPUT] [-z] [--start-date START_DATE] [--end-date END_DATE] [-w WILDCARD]
                          [--suffix SUFFIX] [--overwrite]
 
