@@ -1,73 +1,74 @@
+getGINAsat.py is designed to feed product files from GINA's NRT source to the AWIPS 
+EDEX ingest (default) however, it can also retrieve files for other purposes when used 
+with the "-ni" (no ingest) option. It is typically run from cron using the 
+"getLatestSat_GINA.sh" wrapper for logging and file locking. If the "-noingest" option
+is used, the shell script could be modified to move files from the current working 
+directory.
+
 
 usage: getGINAsat.py [-h] [-a {uaf5,gilmore,uafgina}]
-                     [-s {terra,snpp,noaa21,noaa20,metop-c,metop-b,gcom-w,aws}] [-m MATCH]
+                     [-s {terra,snpp,noaa21,noaa20,metop-c,metop-b,gcom-w,aws}]
+                     [-m MATCH]
                      [-l {level1,level2,scmi,mirs_awips,mirs_scmi,sst_awips,nucaps_level2,clavrx_scmi,mirs_level2,awips,NucapsAwips,edr_scmi,sst_geotif,raw,nucaps_level1,mod14,mirs_level2,mirs_geotif_l1,mirs_awips,level1_agg,level0-ipopp,geotiff_polar_l2,geotiff_polar_l1,geotiff_ngfs_l2,geotiff_level2,geotiff_l2,geotiff_l1,geotiff_gm_l2,geotiff_gm_l1,geotiff,FireAwips,fire,edr_geotiff_l1,clavrx_level2,clavrx_geotiff_l1,binary_slice,acspo_level2,,acspo_awips}]
-                     [-t] [-ni] [-reg] [-f] [-bm BACKMINS] [-v]
-                     {viirs,modis,metop,avhrr,atms,amsr2,all}
-                     [{viirs,modis,metop,avhrr,atms,amsr2,all} ...]
+                     [-t] [-ni] [-reg] [-bm BACKMINS] [-v] [-ver]
+                     [{viirs,modis,metop,avhrr,atms,amsr2,all}]
 
 
-######## Command Line Arguments ########
-
-### Positional Arguments
-One or more sensor types are required "positional" arguments that are not 
+### One or more sensor types are required "positional" arguments that are not 
 preceeded by an option indicator. Below are the only valid sensor choices:
-- **sensor** (required, one or more): Satellite sensors to download.
-  Choices: `viirs`, `modis`, `metop`, `avhrr`, `atms`, `amsr2`, `all`
+   viirs
+   modis
+   avhrr
+   atms
+   metop
+   amsr2
+   all
 
-### Optional Arguments
-'-a`**, `--antenna`**: Antenna source. Choices: 'uaf5', 'gilmore', 'uafgina' (default: `all`)
-`-s`**, `--satellite`**: Satellite source. Choices: 'terra', 'snpp', 'noaa21', 'noaa20', 
-	'metop-c', 'metop-b', 'gcom-w', 'aws' (default: `all`)
--l`**, `--level`**: data processing level. Choices: 'level1`, 'level2', `scmi`, `mirs_awips`, 
-	`mirs_scmi`, `sst_awips`, `nucaps_level2`, `clavrx_scmi`, `mirs_level2`, 
-	`NucapsAwips`, `edr_scmi`, 'sst_geotif', 'raw', 'nucaps_level1', 'mod14', 
-	'mirs_level2', 'mirs_geotif_l1', 'mirs_awips', 'level1_agg', 'level0-ipopp',
-	'geotiff_polar_l2', 'geotiff_polar_l1', 'geotiff_ngfs_l2', 'geotiff_level2',
-	'geotiff_l2', 'geotiff_l1', 'geotiff_gm_l2', 'geotiff_gm_l1', 'geotiff',
-	'FireAwips', 'fire', 'edr_geotiff_l1', 'clavrx_level2', 'clavrx_geotiff_l1',
-	'binary_slice', 'acspo_level2,', 'acspo_awips' (default: 'scmi')
-`-m`**, `--match`**: Match substring in filename. (default: match everything)
-'-t`, `--test`**: Use test NRT data stream. (flag)
-`-ni`, `--noingest`: No AWIPS ingest, transfer file only. (flag)
-`-reg`, `--regionalsat`: add 'Alaska_' prefix to regionalsat filename for for AWIPS
-	to recognize and process. (flag)
-`-f`, `--qcfilter`: Turn on image QC filter. (flag)
-`-bm`**, `--backmins`**: Number of minutes back to consider. (default: `61`, type: int)
-`-v`, `--verbose`: Verbose flag. (flag)
-'-ver', '--version': Report the version number
+### Below are optional arguments are preceeded by option indicators (either one dash
+and a letter, or two dashes and a keyword). Optional arguments are not required unless a 
+specific constraint is needed. An option that is not specified indicates any or all 
+items in that category.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a ANTENNA, --antenna ANTENNA
+                        antennas include: {uaf5, gilmore, uafgina}
+  -s SATELLITE, --satellite SATELLITE
+                        satellites include: {snpp, noaa20, noaa19, noaa18, noaa15, aqua, terra}
+  -l LEVEL, --level LEVEL 
+			levels include: {level1,level2,scmi,mirs_awips,mirs_scmi,sst_awips,nucaps_level2,clavrx_scmi,mirs_level2,awips,NucapsAwips,edr_scmi,sst_geotif,raw,nucaps_level1,mod14,mirs_level2,mirs_geotif_l1,mirs_awips,level1_agg,level0-ipopp,geotiff_polar_l2,geotiff_polar_l1,geotiff_ngfs_l2,geotiff_level2,geotiff_l2,geotiff_l1,geotiff_gm_l2,geotiff_gm_l1,geotiff,FireAwips,fire,edr_geotiff_l1,clavrx_level2,clavrx_geotiff_l1,binary_slice,acspo_level2,,acspo_awips},
+  -m MATCH, --match MATCH
+			match substring in filename
+  -bm BACKMINS, --backmins BACKMINS
+                        num mins back to request products
+  -t, --test            use test NRT data stream
+  -ni, --noingest
+			turns off default to move files to the EDEX ingest directory and 
+			leaves them in the current working directory
+  -reg, --regionalsat   add the prefix Alaska to regionalsat filenames that
+                        AWIPS needs needs for identification
+  -v, --verbose         verbose flag
+  -ver, --version       report version level
+
+##############################################
+getLatestSat_GINA.sh   - a wrapper script for running getGINAsat.py from cron that checks for 
+                         multiple instances that might still be running and appends output to an 
+                         AWIPS log file.  Arguments are passed through to the python script, so 
+			 all arguments listed above apply.
+##############################################
 
 Examples:
 
-getGINAsat.py --level scmi viirs modis avhrr
-       - retrieves any scmi formatted viirs, modis, or avhrr data from any satellite within 
-	the default search time of the last 60 mins.
-
-getGINAsat.py --satellite noaa20 -bm 85 viirs
-       - retrieves any scmi (default) formatted viirs data from noaa20 within the specified 
-	search time of the last 85 mins. 
-
-getGINAsat.py --level mirs_scmi -bm 75 atms avhrr
+getGINAsat.py --level awips viirs modis avhrr
+       - retrieves any awips formatted viirs, modis, or avhrr data from any platform data within 
+	 the default search time of the last 60 mins.
+getGINAsat.py --satellite noaa20 --test -bm 85 viirs
+       - retrieves any awips formatted viirs data from noaa20 within the specified search time
+         of the last 85 mins. 
+getGINAsat.py --level mirs_awips --test -bm 75 atms avhrr
        - retrieves any mirs products in awips format from atms or avhrr(AMSU-A/MHS)  within the 
-	specified search time of the last 75 mins. 
-
+	 specified search time of the last 75 mins. 
 getGINAsat.py --level scmi --test -bm 90 viirs modis
-       - from the test NRT retrieves any SCMI tile formatted files viirs or modis from any 
-	platform data within the specified search time of the last 90 mins.
-
-getGINAsat.py -a uaf5 -l level2 -m CloudHeight -bm 45 -ni viirs
-       - from only uaf5 antenna data retrieves viirs level2 data with filenames that match
-	the "CloudHeight" string from only the uaf5 antenna that within the specified search
-	time of the last 45 mins.
-
-getGINAsat.py -a uaf5 -l edr_scmi -m AOD -t -bm 100 -ni all
-
-#################   additional support script   #############################
-
-getLatestSat_GINA.sh	- a wrapper script for running getGINAsat.py from cron that checks for 
-                         multiple instances that might still be running and appends output to a 
-                         log file.  Arguments are passed through to the python script, so 
-			 all arguments listed above apply.
-
-##############################################
+       - retrieves any SCMI tile formatted viirs or modis from any platform data within 
+	 the specified search time of the last 90 mins.
 
