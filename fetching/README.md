@@ -7,6 +7,11 @@ See sections below for further details on these two scripts. These scripts shoul
 
 Dropdown options can be viewed at http://nrt-status.gina.alaska.edu/products to determine available parameters. Parameters may change over time with updates, such as the addition of new satellite retrievals.
 
+ - [getGINAsat.py](./getGINAsat.py)
+ - [getLatestSat_GINA.sh](./getLatestSat_GINA.sh)
+
+Documention for `getGINAsat.py` located in [README.getGINAsat](./README.getGINAsat). `getLatestSat_GINA.sh` provides a shell script wrapper.
+
 ## mirror_products.sh
 - This script is intended to provide an easy way to retrieve data from GINA's NRT processing system in a scripted manner.  It is intended to be used on a modern linux box, but should work on most unix based systems.
 - This script is intended to be run on a directory at a fixed interval - it will pull data matching the arguements (see below),  and skip any data that was previously downloaded. 
