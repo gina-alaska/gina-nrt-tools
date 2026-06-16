@@ -1,9 +1,18 @@
+getGINAsat.py is designed to feed product files from GINA's NRT source to the AWIPS 
+EDEX ingest (default) however, it can also retrieve files for other purposes when used 
+with the "-ni" (no ingest) option. It is typically run from cron using the 
+"getLatestSat_GINA.sh" wrapper for logging and file locking. If the "-noingest" option
+is used, the shell script could be modified to move files from the current working 
+directory.
 
-usage: getGINAsat.py [-h] [-s SATELLITE]
-                     [-l {awips,mirs_awips,scmi,sst_awips}] [-t] [-c]
-                     [-bm BACKMINS] [-v]
-                     {viirs,modis,metop,avhrr,atms}
-                     [{viirs,modis,metop,avhrr,atms} ...]
+
+usage: getGINAsat.py [-h] [-a {uaf5,gilmore,uafgina}]
+                     [-s {terra,snpp,noaa21,noaa20,metop-c,metop-b,gcom-w,aws}]
+                     [-m MATCH]
+                     [-l {level1,level2,scmi,mirs_awips,mirs_scmi,sst_awips,nucaps_level2,clavrx_scmi,mirs_level2,awips,NucapsAwips,edr_scmi,sst_geotif,raw,nucaps_level1,mod14,mirs_level2,mirs_geotif_l1,mirs_awips,level1_agg,level0-ipopp,geotiff_polar_l2,geotiff_polar_l1,geotiff_ngfs_l2,geotiff_level2,geotiff_l2,geotiff_l1,geotiff_gm_l2,geotiff_gm_l1,geotiff,FireAwips,fire,edr_geotiff_l1,clavrx_level2,clavrx_geotiff_l1,binary_slice,acspo_level2,,acspo_awips}]
+                     [-t] [-ni] [-reg] [-bm BACKMINS] [-v] [-ver]
+                     [{viirs,modis,metop,avhrr,atms,amsr2,all}]
+
 
 ### One or more sensor types are required "positional" arguments that are not 
 preceeded by an option indicator. Below are the only valid sensor choices:
@@ -11,6 +20,9 @@ preceeded by an option indicator. Below are the only valid sensor choices:
    modis
    avhrr
    atms
+   metop
+   amsr2
+   all
 
 ### Below are optional arguments are preceeded by option indicators (either one dash
 and a letter, or two dashes and a keyword). Optional arguments are not required unless a 
@@ -19,16 +31,24 @@ items in that category.
 
 optional arguments:
   -h, --help            show this help message and exit
+  -a ANTENNA, --antenna ANTENNA
+                        antennas include: {uaf5, gilmore, uafgina}
   -s SATELLITE, --satellite SATELLITE
-                        satellites include {snpp, noaa20, noaa19, noaa18, noaa15, aqua, terra}
-  -l {awips,mirs_awips,scmi,sst_awips}, --level {awips,mirs_awips,scmi,sst_awips}
-                        format type
-  -t, --test            use test NRT data stream
-  -c, --qc              turn on image qc filter requiring at least a minimum number of valid pixels 
-                        and a minimum range of values. 
+                        satellites include: {snpp, noaa20, noaa19, noaa18, noaa15, aqua, terra}
+  -l LEVEL, --level LEVEL 
+			levels include: {level1,level2,scmi,mirs_awips,mirs_scmi,sst_awips,nucaps_level2,clavrx_scmi,mirs_level2,awips,NucapsAwips,edr_scmi,sst_geotif,raw,nucaps_level1,mod14,mirs_level2,mirs_geotif_l1,mirs_awips,level1_agg,level0-ipopp,geotiff_polar_l2,geotiff_polar_l1,geotiff_ngfs_l2,geotiff_level2,geotiff_l2,geotiff_l1,geotiff_gm_l2,geotiff_gm_l1,geotiff,FireAwips,fire,edr_geotiff_l1,clavrx_level2,clavrx_geotiff_l1,binary_slice,acspo_level2,,acspo_awips},
+  -m MATCH, --match MATCH
+			match substring in filename
   -bm BACKMINS, --backmins BACKMINS
                         num mins back to request products
+  -t, --test            use test NRT data stream
+  -ni, --noingest
+			turns off default to move files to the EDEX ingest directory and 
+			leaves them in the current working directory
+  -reg, --regionalsat   add the prefix Alaska to regionalsat filenames that
+                        AWIPS needs needs for identification
   -v, --verbose         verbose flag
+  -ver, --version       report version level
 
 ##############################################
 getLatestSat_GINA.sh   - a wrapper script for running getGINAsat.py from cron that checks for 
