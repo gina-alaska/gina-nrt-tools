@@ -1,7 +1,8 @@
 # Fetching
 This directory includes sample scripts for fetching data from GINA's NRT system. 
  - [mirror_products.sh](./mirror_products.sh) provides a template for retrieving data from a unix command line.
- - [fetch_products.py](./fetch_products.py) provides similar functionality in python, with additional filtering options.
+ - [mirror_products_test.sh](./mirror_products_test.sh) provides a template for retrieving data from the GINA test stack.
+ - [fetch_products.py](./fetch_products.py) provides similar functionality to mirror_products in python, with additional filtering options.
 
 See sections below for further details on these two scripts. These scripts should be considered templates and are not intended to have fully developed error handling.
 
