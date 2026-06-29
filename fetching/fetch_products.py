@@ -13,10 +13,10 @@ LOG_FILE=os.getenv("GINA_FETCH_LOG_FILE", "")
 
 @dataclass
 class SearchParams:
-    satellite: Optional[str] = None
-    sensor: Optional[str] = None
-    facility: Optional[str] = None
-    processing_level: Optional[str] = None
+    satellite: Optional[list[str]] = None
+    sensor: Optional[list[str]] = None
+    facility: Optional[list[str]] = None
+    processing_level: Optional[list[str]] = None
     start_date: Optional[str] = None
     end_date: Optional[str] = None
 
@@ -86,7 +86,7 @@ def filter_by_suffix(urls: list, suffix: str) -> list:
         return urls
     return [url for url in urls if url.endswith(suffix)]
 
-def download_files(urls: list, output_dir: str, namespace: bool = False, create_done_file: bool = False, overwrite: bool = False) -> None:
+def download_files(urls: list, output_dir: str, namespace: bool = False, overwrite: bool = False) -> None:
     """
     Download multiple files from a list of URLs.
     
@@ -94,7 +94,6 @@ def download_files(urls: list, output_dir: str, namespace: bool = False, create_
         urls: List of file URLs to download
         output_dir: Directory to save downloaded files
         namespace: If True, organize files into subdirectories based on pass identifiers
-        create_done_file: If True, create a timestamped .done marker file after all downloads complete
         overwrite: If False, skip files that already exist in output_dir (default: False)
     """
     for url in urls:
@@ -114,11 +113,7 @@ def download_files(urls: list, output_dir: str, namespace: bool = False, create_
             output_path = os.path.join(output_dir, filename)
         
         download_file(url, output_path, overwrite=overwrite)
-        
-    if create_done_file:
-        done_file = datetime.now().strftime("%Y%m%d_%H%M%S") + ".done"
-        Path(output_dir) / done_file.touch()
-        logging.info(f"Created done file: {done_file}")
+
 
 def download_file(url: str, output_path: str, overwrite: bool = False) -> None:
     """
@@ -159,18 +154,22 @@ def main():
     
     parser.add_argument(
         "-s", "--satellite",
+        nargs="+",
         help="Fetch data for SATELLITE"
     )
     parser.add_argument(
         "-i", "--sensor",
+        nargs="+",
         help="Fetch data for SENSOR"
     )
     parser.add_argument(
         "-f", "--facility",
+        nargs="+",
         help="Fetch data for FACILITY"
     )
     parser.add_argument(
         "-p", "--processing-level",
+        nargs="+",
         help="Fetch data for PROCESSING_LEVEL"
     )
     parser.add_argument(
@@ -182,11 +181,6 @@ def main():
         "-o", "--output",
         default=".",
         help="Path to write data to (Default: current directory)"
-    )
-    parser.add_argument(
-        "-z", "--done-file",
-        action="store_true",
-        help="Create done file"
     )
     parser.add_argument(
         "--start-date",
@@ -249,8 +243,7 @@ def main():
                 filtered_products,
                 args.output,
                 namespace=args.namespace,
-                create_done_file=args.done_file,
-                overwrite=args.overwrite
+                overwrite=args.overwrite,
             )
         else:
             logging.info("No products match the filters")
