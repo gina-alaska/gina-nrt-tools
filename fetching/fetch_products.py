@@ -4,9 +4,37 @@ import os
 from pathlib import Path
 import requests
 from datetime import datetime
+from dataclasses import dataclass, field
+from typing import Optional
 
 NRT_SITE="http://nrt-status.gina.alaska.edu/products.txt?"
 LOG_FILE=os.getenv("GINA_FETCH_LOG_FILE", "")
+
+
+@dataclass
+class SearchParams:
+    satellite: Optional[str] = None
+    sensor: Optional[str] = None
+    facility: Optional[str] = None
+    processing_level: Optional[str] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+
+    def to_query_params(self) -> dict:
+        """Convert to API query param format, skipping unset fields."""
+        mapping = {
+            "satellite": "satellites[]",
+            "sensor": "sensors[]",
+            "facility": "facilities[]",
+            "processing_level": "processing_levels[]",
+            "start_date": "start_date",
+            "end_date": "end_date",
+        }
+        return {
+            mapping[k]: v
+            for k, v in vars(self).items()
+            if v is not None
+        }
 
 def retrieve_product_list(params: dict) -> list:
     """
@@ -89,7 +117,7 @@ def download_files(urls: list, output_dir: str, namespace: bool = False, create_
         
     if create_done_file:
         done_file = datetime.now().strftime("%Y%m%d_%H%M%S") + ".done"
-        Path(done_file).touch()
+        Path(output_dir) / done_file.touch()
         logging.info(f"Created done file: {done_file}")
 
 def download_file(url: str, output_path: str, overwrite: bool = False) -> None:
@@ -193,25 +221,21 @@ def main():
         parser.print_help()
         return
     
-    params = {}
-    if args.satellite:
-        params["satellites[]"] = args.satellite
-    if args.sensor:
-        params["sensors[]"] = args.sensor
-    if args.facility:
-        params["facilities[]"] = args.facility
-    if args.processing_level:
-        params["processing_levels[]"] = args.processing_level
-    if args.start_date:
-        params["start_date"] = args.start_date
-    if args.end_date:
-        params["end_date"] = args.end_date
-    
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(levelname)s - %(message)s',
                         filename=LOG_FILE if LOG_FILE else None
                         )
     
+    params = SearchParams(
+        satellite=args.satellite,
+        sensor=args.sensor,
+        facility=args.facility,
+        processing_level=args.processing_level,
+        start_date=args.start_date,
+        end_date=args.end_date,
+    ).to_query_params()
+    
+
     products = retrieve_product_list(params)
     
     if products:
