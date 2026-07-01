@@ -3,8 +3,7 @@ import logging
 import os
 from pathlib import Path
 import requests
-from datetime import datetime
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 NRT_SITE = "http://nrt-status.gina.alaska.edu/products.txt?"
@@ -87,7 +86,7 @@ def filter_by_suffix(urls: list, suffix: str) -> list:
 
 
 def download_files(
-    urls: list, output_dir: str, namespace: bool = False, overwrite: bool = False
+    urls: list, output_dir: Path, namespace: bool = False, overwrite: bool = False
 ) -> None:
     """
     Download multiple files from a list of URLs.
@@ -110,14 +109,21 @@ def download_files(
             # Extract pass identifier from URL if possible
             parts = url.split("/")
             pass_dir = parts[-2] if len(parts) > 1 else "data"
-            output_path = os.path.join(output_dir, pass_dir, filename)
+            output_path = output_dir / pass_dir / filename
         else:
-            output_path = os.path.join(output_dir, filename)
+            output_path = output_dir / filename
 
-        _ = download_file(url, output_path, overwrite=overwrite)
+        try:
+            download_file(url, output_path, overwrite=overwrite)
+        except DownloadError as e:
+            logging.warning(e)
 
 
-def download_file(url: str, output_path: str, overwrite: bool = False) -> None:
+class DownloadError(Exception):
+    """Raised when a file download fails."""
+
+
+def download_file(url: str, output_path: Path, overwrite: bool = False) -> Path:
     """
     Download a single file from a URL and save it to the specified path.
 
@@ -127,10 +133,10 @@ def download_file(url: str, output_path: str, overwrite: bool = False) -> None:
         overwrite: If False, skip download if file already exists (default: False)
 
     Note:
-        Creates parent directories as needed. Logs errors without raising exceptions.
+        Creates parent directories as needed. Logs errors as warnings without raising exceptions.
     """
     # Check if file already exists
-    if os.path.exists(output_path) and not overwrite:
+    if output_path.exists() and not overwrite:
         logging.info(f"Skipped (file exists): {output_path}")
         return output_path
 
@@ -138,15 +144,15 @@ def download_file(url: str, output_path: str, overwrite: bool = False) -> None:
         response = requests.get(url, stream=True)
         response.raise_for_status()
 
-        os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
 
         with open(output_path, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
-        logging.info(f"Downloaded: {output_path} frpm {url}")
+        logging.info(f"Downloaded: {output_path} from {url}")
         return output_path
     except requests.RequestException as e:
-        logging.info(f"Error downloading {url}: {e}")
+        raise DownloadError(f"Error downloading {url}: {e}") from e
 
 
 def main():
@@ -169,7 +175,8 @@ def main():
     parser.add_argument(
         "-o",
         "--output",
-        default=".",
+        type=Path,
+        default=Path("."),
         help="Path to write data to (Default: current directory)",
     )
     parser.add_argument(
