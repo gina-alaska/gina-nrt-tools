@@ -1,3 +1,10 @@
+"""Fetching script and functions for GINA's NRT system.
+
+Requires python 3.9+ and requests package.
+
+Allows searching, filtering, and downloading of GINA NRT data. See dropdown menus at "http://nrt-status.gina.alaska.edu/products?" for available parameters.
+"""
+
 import argparse
 import logging
 import os
@@ -45,7 +52,7 @@ def retrieve_product_list(params: dict) -> list:
     Raises:
         requests.RequestException: If the HTTP request fails
     """
-    response = requests.get(NRT_SITE, params=params)
+    response = requests.get(NRT_SITE, params=params, timeout=30)
     logging.info(f"Retrieving products from URL: {response.url}")
     response.raise_for_status()
 
@@ -133,7 +140,7 @@ def download_file(url: str, output_path: Path, overwrite: bool = False) -> Path:
         overwrite: If False, skip download if file already exists (default: False)
 
     Note:
-        Creates parent directories as needed. Logs errors as warnings without raising exceptions.
+        Creates parent directories as needed. Raises custom DownloadError exception upon request failure.
     """
     # Check if file already exists
     if output_path.exists() and not overwrite:
@@ -141,7 +148,7 @@ def download_file(url: str, output_path: Path, overwrite: bool = False) -> Path:
         return output_path
 
     try:
-        response = requests.get(url, stream=True)
+        response = requests.get(url, stream=True, timeout=30)
         response.raise_for_status()
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
