@@ -128,26 +128,25 @@ test
 
 ```bash
 $ python fetch_products.py  -h
-usage: fetch_products.py [-h] [-s SATELLITE] [-i SENSOR] [-f FACILITY] [-p PROCESSING_LEVEL] [-n]
-                         [-o OUTPUT] [-z] [--start-date START_DATE] [--end-date END_DATE] [-w WILDCARD]
-                         [--suffix SUFFIX] [--overwrite]
+usage: fetch_products.py [-h] [-s SATELLITE [SATELLITE ...]] [-i SENSOR [SENSOR ...]] [-f FACILITY [FACILITY ...]]
+                         [-p PROCESSING_LEVEL [PROCESSING_LEVEL ...]] [-n] [-o OUTPUT] [--start-date START_DATE]
+                         [--end-date END_DATE] [-w WILDCARD] [--suffix SUFFIX] [--overwrite]
 
 Fetch and download files from gina processing stack
 
 options:
   -h, --help            show this help message and exit
-  -s SATELLITE, --satellite SATELLITE
+  -s SATELLITE [SATELLITE ...], --satellite SATELLITE [SATELLITE ...]
                         Fetch data for SATELLITE
-  -i SENSOR, --sensor SENSOR
+  -i SENSOR [SENSOR ...], --sensor SENSOR [SENSOR ...]
                         Fetch data for SENSOR
-  -f FACILITY, --facility FACILITY
+  -f FACILITY [FACILITY ...], --facility FACILITY [FACILITY ...]
                         Fetch data for FACILITY
-  -p PROCESSING_LEVEL, --processing-level PROCESSING_LEVEL
+  -p PROCESSING_LEVEL [PROCESSING_LEVEL ...], --processing-level PROCESSING_LEVEL [PROCESSING_LEVEL ...]
                         Fetch data for PROCESSING_LEVEL
   -n, --namespace       Namespace the data (Place in sub-directories for each pass)
   -o OUTPUT, --output OUTPUT
                         Path to write data to (Default: current directory)
-  -z, --done-file       Create done file
   --start-date START_DATE
                         Start date for filtering products (YYYY-MM-DD format)
   --end-date END_DATE   End date for filtering products (YYYY-MM-DD format)
