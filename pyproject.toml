@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["fetch_products"]
+packages = ["gina_nrt_fetch"]
 
 [tool.setuptools.package-dir]
-"gina-nrt-fetch" = "fetching"
+"gina_nrt_fetch" = "fetching"
