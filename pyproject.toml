@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-py-modules = ["fetch_products"]
+packages = ["fetch_products"]
 
 [tool.setuptools.package-dir]
-"" = "fetching"
+"gina-nrt-fetch" = "fetching"
