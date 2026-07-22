@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gina-nrt-fetch"
+version = "0.1.0"
+description = "Fetch GINA nrt products"
+requires-python = ">=3.9"
+dependencies = [
+    "requests"
+]
+
+[tool.setuptools]
+py-modules = ["fetch_products"]
+
+[tool.setuptools.package-dir]
+"" = "fetching"
