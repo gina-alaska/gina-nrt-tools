@@ -53,7 +53,7 @@ def retrieve_product_list(params: dict) -> list:
         requests.RequestException: If the HTTP request fails
     """
     response = requests.get(NRT_SITE, params=params, timeout=30)
-    logging.info(f"Retrieving products from URL: {response.url}")
+    logging.debug(f"Retrieving products from URL: {response.url}")
     response.raise_for_status()
 
     product_urls = response.text.strip().splitlines()
@@ -124,6 +124,7 @@ def download_files(
             download_file(url, output_path, overwrite=overwrite)
         except DownloadError as e:
             logging.warning(e)
+    logging.info(f"Downloaded {len(urls)} files to {output_dir}")
 
 
 class DownloadError(Exception):
@@ -144,7 +145,7 @@ def download_file(url: str, output_path: Path, overwrite: bool = False) -> Path:
     """
     # Check if file already exists
     if output_path.exists() and not overwrite:
-        logging.info(f"Skipped (file exists): {output_path}")
+        logging.debug(f"Skipped (file exists): {output_path}")
         return output_path
 
     try:
@@ -156,7 +157,7 @@ def download_file(url: str, output_path: Path, overwrite: bool = False) -> Path:
         with open(output_path, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
-        logging.info(f"Downloaded: {output_path} from {url}")
+        logging.debug(f"Downloaded: {output_path} from {url}")
         return output_path
     except requests.RequestException as e:
         raise DownloadError(f"Error downloading {url}: {e}") from e
