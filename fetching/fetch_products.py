@@ -60,7 +60,6 @@ def retrieve_product_list(params: dict) -> list:
     product_urls = response.text.strip().splitlines()
     return product_urls
 
-
 def filter_by_wildcard(urls: list, wildcard: str) -> list:
     """
     Filter URLs by checking if they contain a wildcard string.
@@ -74,18 +73,28 @@ def filter_by_wildcard(urls: list, wildcard: str) -> list:
     """
     if not wildcard:
         return urls
+    return [url for url in urls if wildcard in url]
+
+def filter_by_regex_wildcard(urls: list, wildcard: str) -> list:
+    """
+    Filter URLS by checking if they match a regex.
+
+    Args:
+        urls: List of URLs to filter
+        wildcard: A valid regex pattern to match URLs. If empty, returns all URLs.
+    Returns:
+        List of URLs matching wildcard regex
+    """
+    if not wildcard:
+        return urls
 
     try:
-        has_regex = any(c in wildcard for c in ".*+?^%{}()|[]\\")
-        if has_regex:
-            pattern = re.compile(wildcard)
-        else: # reg string
-            pattern = re.compile(re.escape(wildcard))
-    except re.error: # treat as reg string if bad regex
-        pattern = re.compile(re.escape(wildcard))
-
+        pattern = re.compile(wildcard)
+    except re.error as e:
+        logging.error(f"Bad regex pattern '{wildcard}': {e}")
+        return []
+        
     return [url for url in urls if pattern.search(url)]
-
 
 def filter_by_suffix(urls: list, suffix: str) -> list:
     """
@@ -214,6 +223,12 @@ def main():
         help="Wildcard filter for filenames (only download files containing this string)",
     )
     parser.add_argument(
+        "-r", 
+        "--regex",
+        default="",
+        help="Wildcard filter in valid regex format for filenames (only download files matching this regex pattern)",
+    )
+    parser.add_argument(
         "--suffix",
         default="",
         help="Filter by file suffix (e.g., '.png' or 'small.png')",
@@ -250,6 +265,7 @@ def main():
 
     if products:
         filtered_products = filter_by_wildcard(products, args.wildcard)
+        filtered_products = filter_by_regex_wildcard(products, args.regex)
         filtered_products = filter_by_suffix(filtered_products, args.suffix)
 
         logging.info(f"Found {len(filtered_products)} product(s) matching filters")
