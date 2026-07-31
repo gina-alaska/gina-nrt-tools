@@ -12,6 +12,7 @@ from pathlib import Path
 import requests
 from dataclasses import dataclass
 from typing import Optional
+import re
 
 NRT_SITE = "http://nrt-status.gina.alaska.edu/products.txt?"
 LOG_FILE = os.getenv("GINA_FETCH_LOG_FILE", "")
@@ -73,7 +74,17 @@ def filter_by_wildcard(urls: list, wildcard: str) -> list:
     """
     if not wildcard:
         return urls
-    return [url for url in urls if wildcard in url]
+
+    try:
+        has_regex = any(c in wildcard for c in ".*+?^%{}()|[]\\")
+        if has_regex:
+            pattern = re.compile(wildcard)
+        else: # reg string
+            pattern = re.compile(re.escape(wildcard))
+    except re.error: # treat as reg string if bad regex
+        pattern = re.compile(re.escape(wildcard))
+
+    return [url for url in urls if pattern.search(url)]
 
 
 def filter_by_suffix(urls: list, suffix: str) -> list:
